@@ -143,6 +143,12 @@ Here you can put your change to keep a trace of your work and decisions.
 * PostgreSQL installed and configured
 * Will need SSL
 
+### 2024-01-03: No SSL
+
+* Sonar doesnt allow to configure SSL, need a reverse proxy
+* Need tests
+* Install Java 17 fixed
+
 ## Authors
 
 * Lord Robin Crombez
