@@ -1,1 +1,4 @@
 ---
+
+install_sonarqube_user: "sonarqube"
+install_sonarqube_group: "sonarqube"
