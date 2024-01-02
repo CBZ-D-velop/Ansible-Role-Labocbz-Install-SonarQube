@@ -137,6 +137,11 @@ Here you can put your change to keep a trace of your work and decisions.
 ### 2024-01-02: First Init
 
 * First init of this role with the bootstrap_role playbook by Lord Robin Crombez
+* Role install SonarQube
+* App is installed and working
+* WARNING, error on install PostgreSQL when Java 17 installed before, you can install Java 11, PostgreSQL and after that install Java 17, so in some systems, 2 runs are mandatory
+* PostgreSQL installed and configured
+* Will need SSL
 
 ## Authors
 

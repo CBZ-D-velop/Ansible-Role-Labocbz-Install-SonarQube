@@ -2,3 +2,5 @@
 inv_prepare_host_system_users:
   - login: "sonarqube"
     group: "sonarqube"
+  - login: "postgres"
+    group: "postgres"

@@ -1,1 +1,130 @@
 ---
+- name: "Perform pre tasks configurations (-u / -p for multiple bash possibilities)"
+  register: output
+  changed_when: output.rc != 0
+  ignore_errors: true # Because of Docker limitations
+  ansible.builtin.shell: |
+    sysctl -w vm.max_map_count=524288
+    sysctl -w fs.file-max=131072
+    ulimit -n 131072
+    ulimit -p 8192
+    ulimit -u 8192
+
+- name: "Install packages"
+  ansible.builtin.package:
+    update_cache: true
+    name:
+      - "wget"
+      - "unzip"
+      - "curl"
+      - "gnupg2"
+      - "ca-certificates"
+      - "lsb-release"
+      - "socat"
+
+- name: "Install and configure PostgreSQL"
+  block:
+    - name: "Add PostgreSQL"
+      register: output
+      changed_when: output.rc != 0
+      ansible.builtin.shell: |
+        echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list
+        wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | sudo apt-key add -
+
+    - name: "Install PostgreSQL"
+      notify:
+        - "Enable and start PostgreSQL"
+      ansible.builtin.package:
+        update_cache: true
+        name:
+          - "postgresql"
+          - "postgresql-contrib"
+
+    - name: "Add / Edit system user for PostgreSQL"
+      ansible.builtin.user:
+        name: "{{ install_sonarqube_postgres_user }}"
+        groups: "{{ install_sonarqube_postgres_group }}"
+        state: present
+        system: true
+        create_home: false
+        append: true
+        shell: "/sbin/nologin"
+
+    - name: "Flush handlers"
+      ansible.builtin.meta: flush_handlers
+
+    - name: "Add SonarQube user, configure database, to PostgreSQL"
+      register: output
+      changed_when: output.rc != 0
+      become: yes
+      become_user: "postgres"
+      ansible.builtin.shell: |
+        psql -c "CREATE USER {{ install_sonarqube_postgres_sonarqube_login }} WITH ENCRYPTED password '{{ install_sonarqube_postgres_sonarqube_password }}';"
+        psql -c "CREATE DATABASE sonarqube OWNER {{ install_sonarqube_postgres_sonarqube_login }};"
+        psql -c "GRANT ALL PRIVILEGES ON DATABASE sonarqube to {{ install_sonarqube_postgres_sonarqube_login }};"
+
+- name: "Install SonarQube"
+  notify:
+    - "Restart SonarQube"
+  block:
+    - name: "Check if folder lib exist"
+      register: folder_check
+      ansible.builtin.stat:
+        path: "{{ install_sonarqube_lib_path }}"
+
+    - name: "Create lib path"
+      when: not folder_check.stat.exists
+      ansible.builtin.file:
+        path: "{{ install_sonarqube_lib_path }}"
+        state: directory
+        recurse: yes
+        mode: "0700"
+        group: "{{ install_sonarqube_user }}"
+        owner: "{{ install_sonarqube_user }}"
+
+    - name: "Check if folder log exist"
+      register: folder_check
+      ansible.builtin.stat:
+        path: "{{ install_sonarqube_log_path }}"
+
+    - name: "Create log path"
+      when: not folder_check.stat.exists
+      ansible.builtin.file:
+        path: "{{ install_sonarqube_log_path }}"
+        state: directory
+        recurse: yes
+        mode: "0700"
+        group: "{{ install_sonarqube_user }}"
+        owner: "{{ install_sonarqube_user }}"
+
+    - name: "Download sources and extract"
+      ansible.builtin.unarchive:
+        src: "https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-{{ install_sonarqube_version }}.zip"
+        dest: "{{ install_sonarqube_lib_path }}"
+        mode: "0700"
+        group: "{{ install_sonarqube_user }}"
+        owner: "{{ install_sonarqube_user }}"
+        remote_src: true
+        exclude:
+          - "sonarqube-{{ install_sonarqube_version }}/conf/sonar.properties"
+
+    - name: "Import SonarQube properties file"
+      ansible.builtin.template:
+        src: "templates/sonar.properties.j2"
+        dest: "{{ install_sonarqube_lib_path }}/sonarqube-{{ install_sonarqube_version }}/conf/sonar.properties"
+        mode: "0700"
+        group: "{{ install_sonarqube_user }}"
+        owner: "{{ install_sonarqube_user }}"
+        lstrip_blocks: yes
+
+- name: "Import SonarQube service file"
+  notify:
+    - "Enable and start SonarQube"
+    - "Restart SonarQube"
+  ansible.builtin.template:
+    src: "templates/sonarqube.service.j2"
+    dest: "/etc/systemd/system/sonarqube.service"
+    mode: "0600"
+    group: "root"
+    owner: "root"
+    lstrip_blocks: yes
