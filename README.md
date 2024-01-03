@@ -14,8 +14,17 @@
 ![Tag: Debian](https://img.shields.io/badge/Tech-Debian-orange)
 ![Tag: SSL/TLS](https://img.shields.io/badge/Tech-SSL%2FTLS-orange)
 ![Tag: SonarQube](https://img.shields.io/badge/Tech-SonarQube-orange)
+![Tag: PostgreSQL](https://img.shields.io/badge/Tech-PostgreSQL-orange)
 
 An Ansible role to install and configure SonarQube on your host.
+
+This Ansible role streamlines the installation of SonarQube, offering flexibility and customization based on the provided variables. Whether deploying from sources or a zip archive, the role automates the installation process, allowing for seamless integration into your environment.
+
+Key parameters, such as installation path, SonarQube version, embedded web server configurations, and PostgreSQL database details, are all customizable to suit your infrastructure preferences.
+
+The role handles the creation of necessary system users, PostgreSQL database management, and configures SonarQube as a systemd service. It provides the option to customize Elasticsearch settings while ensuring secure installation practices.
+
+In summary, with this Ansible role, deploying SonarQube becomes efficient and tailored to your environment, simplifying and automating crucial aspects of the installation process.
 
 ## Folder structure
 
@@ -100,7 +109,32 @@ Some vars a required to run this role:
 
 ```YAML
 ---
-your defaults vars here
+
+install_sonarqube_user: "sonarqube"
+install_sonarqube_group: "sonarqube"
+
+install_sonarqube_postgres_user: "postgres"
+install_sonarqube_postgres_group: "postgres"
+
+install_sonarqube_postgres_sonarqube_login: "{{ install_sonarqube_user }}"
+install_sonarqube_postgres_sonarqube_password: "KDOEKD930DKDOEK3"
+
+install_sonarqube_lib_path: /usr/local/sonarqube
+install_sonarqube_log_path: "/var/log/sonarqube"
+install_sonarqube_version: "10.3.0.82913"
+
+install_sonarqube_web_heap: "512m"
+install_sonarqube_web_host: "0.0.0.0"
+install_sonarqube_web_context: "/"
+install_sonarqube_web_port: 9000
+
+install_sonarqube_elasticsearch_heap: "512m"
+install_sonarqube_elasticsearch_port: 9001
+install_sonarqube_elasticsearch_host: "0.0.0.0"
+
+install_sonarqube_log_level: "INFO"
+install_sonarqube_log_retention: 31
+
 ```
 
 The best way is to modify these vars by copy the ./default/main.yml file into the ./vars and edit with your personnals requirements.
@@ -112,13 +146,43 @@ In order to surchage vars, you have multiples possibilities but for mains cases 
 ```YAML
 # From inventory
 ---
-all vars from to put/from your inventory
+inv_prepare_host_system_users:
+  - login: "sonarqube"
+    group: "sonarqube"
+  - login: "postgres"
+    group: "postgres"
+
+inv_install_sonarqube_user: "sonarqube"
+inv_install_sonarqube_group: "sonarqube"
+
+inv_install_sonarqube_postgres_user: "postgres"
+inv_install_sonarqube_postgres_group: "postgres"
+
+inv_install_sonarqube_postgres_sonarqube_login: "{{ install_sonarqube_user }}"
+inv_install_sonarqube_postgres_sonarqube_password: "KDOEKD930DKDOEK3"
+
+inv_install_sonarqube_lib_path: /usr/local/sonarqube
+inv_install_sonarqube_log_path: "/var/log/sonarqube"
+inv_install_sonarqube_version: "10.3.0.82913"
+
+inv_install_sonarqube_web_heap: "512m"
+inv_install_sonarqube_web_host: "0.0.0.0"
+inv_install_sonarqube_web_context: "/"
+inv_install_sonarqube_web_port: 9000
+
+inv_install_sonarqube_elasticsearch_heap: "512m"
+inv_install_sonarqube_elasticsearch_port: 9001
+inv_install_sonarqube_elasticsearch_host: "0.0.0.0"
+
+inv_install_sonarqube_log_level: "INFO"
+inv_install_sonarqube_log_retention: 31
+
 ```
 
 ```YAML
 # From AWX / Tower
 ---
-all vars from to put/from AWX / Tower
+
 ```
 
 ### Run
@@ -126,8 +190,30 @@ all vars from to put/from AWX / Tower
 To run this role, you can copy the molecule/default/converge.yml playbook and add it into your playbook:
 
 ```YAML
----
-your converge.yml file here
+- name: "Include labocbz.install_sonarqube"
+  tags:
+    - "labocbz.install_sonarqube"
+  vars:
+    install_sonarqube_user: "{{ inv_install_sonarqube_user }}"
+    install_sonarqube_group: "{{ inv_install_sonarqube_group }}"
+    install_sonarqube_postgres_user: "{{ inv_install_sonarqube_postgres_user }}"
+    install_sonarqube_postgres_group: "{{ inv_install_sonarqube_postgres_group }}"
+    install_sonarqube_postgres_sonarqube_login: "{{ inv_install_sonarqube_postgres_sonarqube_login }}"
+    install_sonarqube_postgres_sonarqube_password: "{{ inv_install_sonarqube_postgres_sonarqube_password }}"
+    install_sonarqube_lib_path: "{{ inv_install_sonarqube_lib_path }}"
+    install_sonarqube_log_path: "{{ inv_install_sonarqube_log_path }}"
+    install_sonarqube_version: "{{ inv_install_sonarqube_version }}"
+    install_sonarqube_web_heap: "{{ inv_install_sonarqube_web_heap }}"
+    install_sonarqube_web_host: "{{ inv_install_sonarqube_web_host }}"
+    install_sonarqube_web_context: "{{ inv_install_sonarqube_web_context }}"
+    install_sonarqube_web_port: "{{ inv_install_sonarqube_web_port }}"
+    install_sonarqube_elasticsearch_heap: "{{ inv_install_sonarqube_elasticsearch_heap }}"
+    install_sonarqube_log_level: "{{ inv_install_sonarqube_log_level }}"
+    install_sonarqube_log_retention: "{{ inv_install_sonarqube_log_retention }}"
+    install_sonarqube_elasticsearch_port: "{{ inv_install_sonarqube_elasticsearch_port }}"
+    install_sonarqube_elasticsearch_host: "{{ inv_install_sonarqube_elasticsearch_host }}"
+  ansible.builtin.include_role:
+    name: "labocbz.install_sonarqube"
 ```
 
 ## Architectural Decisions Records
@@ -137,6 +223,22 @@ Here you can put your change to keep a trace of your work and decisions.
 ### 2024-01-02: First Init
 
 * First init of this role with the bootstrap_role playbook by Lord Robin Crombez
+* Role install SonarQube
+* App is installed and working
+* WARNING, error on install PostgreSQL when Java 17 installed before, you can install Java 11, PostgreSQL and after that install Java 17, so in some systems, 2 runs are mandatory
+* PostgreSQL installed and configured
+* Will need SSL
+
+### 2024-01-03: No SSL
+
+* Sonar doesnt allow to configure SSL, need a reverse proxy
+* Need tests
+* Install Java 17 fixed
+
+### 2023-01-23-b: Tests
+
+* Role have been tested*
+* Certs removed (no SSL/TLS support for SonarQube ...)
 
 ## Authors
 

@@ -2,3 +2,25 @@
 
 install_sonarqube_user: "sonarqube"
 install_sonarqube_group: "sonarqube"
+
+install_sonarqube_postgres_user: "postgres"
+install_sonarqube_postgres_group: "postgres"
+
+install_sonarqube_postgres_sonarqube_login: "{{ install_sonarqube_user }}"
+install_sonarqube_postgres_sonarqube_password: "KDOEKD930DKDOEK3"
+
+install_sonarqube_lib_path: /usr/local/sonarqube
+install_sonarqube_log_path: "/var/log/sonarqube"
+install_sonarqube_version: "10.3.0.82913"
+
+install_sonarqube_web_heap: "512m"
+install_sonarqube_web_host: "0.0.0.0"
+install_sonarqube_web_context: "/"
+install_sonarqube_web_port: 9000
+
+install_sonarqube_elasticsearch_heap: "512m"
+install_sonarqube_elasticsearch_port: 9001
+install_sonarqube_elasticsearch_host: "0.0.0.0"
+
+install_sonarqube_log_level: "INFO"
+install_sonarqube_log_retention: 31
