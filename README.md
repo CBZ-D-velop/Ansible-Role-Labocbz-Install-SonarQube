@@ -235,6 +235,11 @@ Here you can put your change to keep a trace of your work and decisions.
 * Need tests
 * Install Java 17 fixed
 
+### 2023-01-23-b: Tests
+
+* Role have been tested*
+* Certs removed (no SSL/TLS support for SonarQube ...)
+
 ## Authors
 
 * Lord Robin Crombez
