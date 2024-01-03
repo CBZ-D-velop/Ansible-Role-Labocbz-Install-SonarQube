@@ -290,7 +290,7 @@ sonar.search.javaOpts=-Xmx{{ install_sonarqube_elasticsearch_heap }} -Xms{{ inst
 
 # Elasticsearch port for incoming HTTP connections. Default is 9001. Use 0 to get a free port.
 # As a security precaution, should be blocked by a firewall and not exposed to the Internet.
-#sonar.search.port=9001
+sonar.search.port={{ install_sonarqube_elasticsearch_port }}
 
 # Elasticsearch TCP transport port that is bound to loopback address. When nothing is set, a random port will be chosen.
 # As a security precaution, your OS configuration should not expose this port for external access.
@@ -299,7 +299,7 @@ sonar.search.javaOpts=-Xmx{{ install_sonarqube_elasticsearch_heap }} -Xms{{ inst
 # Elasticsearch host. The search server will bind this address and the search client will connect to it.
 # Default is loopback address.
 # As a security precaution, should NOT be set to a publicly available address.
-#sonar.search.host=
+sonar.search.host={{ install_sonarqube_elasticsearch_host }}
 
 
 #--------------------------------------------------------------------------------------------------

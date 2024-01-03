@@ -4,3 +4,28 @@ inv_prepare_host_system_users:
     group: "sonarqube"
   - login: "postgres"
     group: "postgres"
+
+inv_install_sonarqube_user: "sonarqube"
+inv_install_sonarqube_group: "sonarqube"
+
+inv_install_sonarqube_postgres_user: "postgres"
+inv_install_sonarqube_postgres_group: "postgres"
+
+inv_install_sonarqube_postgres_sonarqube_login: "{{ install_sonarqube_user }}"
+inv_install_sonarqube_postgres_sonarqube_password: "KDOEKD930DKDOEK3"
+
+inv_install_sonarqube_lib_path: /usr/local/sonarqube
+inv_install_sonarqube_log_path: "/var/log/sonarqube"
+inv_install_sonarqube_version: "10.3.0.82913"
+
+inv_install_sonarqube_web_heap: "512m"
+inv_install_sonarqube_web_host: "0.0.0.0"
+inv_install_sonarqube_web_context: "/"
+inv_install_sonarqube_web_port: 9000
+
+inv_install_sonarqube_elasticsearch_heap: "512m"
+inv_install_sonarqube_elasticsearch_port: 9001
+inv_install_sonarqube_elasticsearch_host: "0.0.0.0"
+
+inv_install_sonarqube_log_level: "INFO"
+inv_install_sonarqube_log_retention: 31

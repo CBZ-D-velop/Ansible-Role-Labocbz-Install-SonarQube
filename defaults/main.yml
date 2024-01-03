@@ -19,6 +19,8 @@ install_sonarqube_web_context: "/"
 install_sonarqube_web_port: 9000
 
 install_sonarqube_elasticsearch_heap: "512m"
+install_sonarqube_elasticsearch_port: 9001
+install_sonarqube_elasticsearch_host: "0.0.0.0"
 
 install_sonarqube_log_level: "INFO"
 install_sonarqube_log_retention: 31
