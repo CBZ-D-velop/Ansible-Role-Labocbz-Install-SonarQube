@@ -79,7 +79,7 @@
         state: directory
         recurse: yes
         mode: "0700"
-        group: "{{ install_sonarqube_user }}"
+        group: "{{ install_sonarqube_group }}"
         owner: "{{ install_sonarqube_user }}"
 
     - name: "Check if folder log exist"
@@ -94,7 +94,7 @@
         state: directory
         recurse: yes
         mode: "0700"
-        group: "{{ install_sonarqube_user }}"
+        group: "{{ install_sonarqube_group }}"
         owner: "{{ install_sonarqube_user }}"
 
     - name: "Download sources and extract"
@@ -102,7 +102,7 @@
         src: "https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-{{ install_sonarqube_version }}.zip"
         dest: "{{ install_sonarqube_lib_path }}"
         mode: "0700"
-        group: "{{ install_sonarqube_user }}"
+        group: "{{ install_sonarqube_group }}"
         owner: "{{ install_sonarqube_user }}"
         remote_src: true
         exclude:
@@ -113,7 +113,7 @@
         src: "templates/sonar.properties.j2"
         dest: "{{ install_sonarqube_lib_path }}/sonarqube-{{ install_sonarqube_version }}/conf/sonar.properties"
         mode: "0700"
-        group: "{{ install_sonarqube_user }}"
+        group: "{{ install_sonarqube_group }}"
         owner: "{{ install_sonarqube_user }}"
         lstrip_blocks: yes
 
