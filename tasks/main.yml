@@ -60,7 +60,7 @@
       become_user: "postgres"
       ansible.builtin.shell: |
         psql -c "CREATE USER {{ install_sonarqube_postgres_sonarqube_login }} WITH ENCRYPTED password '{{ install_sonarqube_postgres_sonarqube_password }}';"
-        psql -c "CREATE DATABASE sonarqube OWNER {{ install_sonarqube_postgres_sonarqube_login }};"
+        psql -c "CREATE DATABASE sonarqube WITH ENCODING 'UTF8' TEMPLATE=template0 OWNER {{ install_sonarqube_postgres_sonarqube_login }};"
         psql -c "GRANT ALL PRIVILEGES ON DATABASE sonarqube to {{ install_sonarqube_postgres_sonarqube_login }};"
 
 - name: "Install SonarQube"
