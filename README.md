@@ -110,30 +110,30 @@ Some vars a required to run this role:
 ```YAML
 ---
 
-install_sonarqube_user: "sonarqube"
-install_sonarqube_group: "sonarqube"
+install_sonarqube__user: "sonarqube"
+install_sonarqube__group: "sonarqube"
 
-install_sonarqube_postgres_user: "postgres"
-install_sonarqube_postgres_group: "postgres"
+install_sonarqube__postgres_user: "postgres"
+install_sonarqube__postgres_group: "postgres"
 
-install_sonarqube_postgres_sonarqube_login: "{{ install_sonarqube_user }}"
-install_sonarqube_postgres_sonarqube_password: "KDOEKD930DKDOEK3"
+install_sonarqube__postgres_sonarqube_login: "{{ install_sonarqube__user }}"
+install_sonarqube__postgres_sonarqube_password: "KDOEKD930DKDOEK3"
 
-install_sonarqube_lib_path: /usr/local/sonarqube
-install_sonarqube_log_path: "/var/log/sonarqube"
-install_sonarqube_version: "10.3.0.82913"
+install_sonarqube__lib_path: /usr/local/sonarqube
+install_sonarqube__log_path: "/var/log/sonarqube"
+install_sonarqube__version: "10.3.0.82913"
 
-install_sonarqube_web_heap: "512m"
-install_sonarqube_web_host: "0.0.0.0"
-install_sonarqube_web_context: "/"
-install_sonarqube_web_port: 9000
+install_sonarqube__web_heap: "512m"
+install_sonarqube__web_host: "0.0.0.0"
+install_sonarqube__web_context: "/"
+install_sonarqube__web_port: 9000
 
-install_sonarqube_elasticsearch_heap: "512m"
-install_sonarqube_elasticsearch_port: 9001
-install_sonarqube_elasticsearch_host: "0.0.0.0"
+install_sonarqube__elasticsearch_heap: "512m"
+install_sonarqube__elasticsearch_port: 9001
+install_sonarqube__elasticsearch_host: "0.0.0.0"
 
-install_sonarqube_log_level: "INFO"
-install_sonarqube_log_retention: 31
+install_sonarqube__log_level: "INFO"
+install_sonarqube__log_retention: 31
 
 ```
 
@@ -152,30 +152,30 @@ inv_prepare_host_system_users:
   - login: "postgres"
     group: "postgres"
 
-inv_install_sonarqube_user: "sonarqube"
-inv_install_sonarqube_group: "sonarqube"
+inv_install_sonarqube__user: "sonarqube"
+inv_install_sonarqube__group: "sonarqube"
 
-inv_install_sonarqube_postgres_user: "postgres"
-inv_install_sonarqube_postgres_group: "postgres"
+inv_install_sonarqube__postgres_user: "postgres"
+inv_install_sonarqube__postgres_group: "postgres"
 
-inv_install_sonarqube_postgres_sonarqube_login: "{{ install_sonarqube_user }}"
-inv_install_sonarqube_postgres_sonarqube_password: "KDOEKD930DKDOEK3"
+inv_install_sonarqube__postgres_sonarqube_login: "{{ install_sonarqube__user }}"
+inv_install_sonarqube__postgres_sonarqube_password: "KDOEKD930DKDOEK3"
 
-inv_install_sonarqube_lib_path: /usr/local/sonarqube
-inv_install_sonarqube_log_path: "/var/log/sonarqube"
-inv_install_sonarqube_version: "10.3.0.82913"
+inv_install_sonarqube__lib_path: /usr/local/sonarqube
+inv_install_sonarqube__log_path: "/var/log/sonarqube"
+inv_install_sonarqube__version: "10.3.0.82913"
 
-inv_install_sonarqube_web_heap: "512m"
-inv_install_sonarqube_web_host: "0.0.0.0"
-inv_install_sonarqube_web_context: "/"
-inv_install_sonarqube_web_port: 9000
+inv_install_sonarqube__web_heap: "512m"
+inv_install_sonarqube__web_host: "0.0.0.0"
+inv_install_sonarqube__web_context: "/"
+inv_install_sonarqube__web_port: 9000
 
-inv_install_sonarqube_elasticsearch_heap: "512m"
-inv_install_sonarqube_elasticsearch_port: 9001
-inv_install_sonarqube_elasticsearch_host: "0.0.0.0"
+inv_install_sonarqube__elasticsearch_heap: "512m"
+inv_install_sonarqube__elasticsearch_port: 9001
+inv_install_sonarqube__elasticsearch_host: "0.0.0.0"
 
-inv_install_sonarqube_log_level: "INFO"
-inv_install_sonarqube_log_retention: 31
+inv_install_sonarqube__log_level: "INFO"
+inv_install_sonarqube__log_retention: 31
 
 ```
 
@@ -194,24 +194,24 @@ To run this role, you can copy the molecule/default/converge.yml playbook and ad
   tags:
     - "labocbz.install_sonarqube"
   vars:
-    install_sonarqube_user: "{{ inv_install_sonarqube_user }}"
-    install_sonarqube_group: "{{ inv_install_sonarqube_group }}"
-    install_sonarqube_postgres_user: "{{ inv_install_sonarqube_postgres_user }}"
-    install_sonarqube_postgres_group: "{{ inv_install_sonarqube_postgres_group }}"
-    install_sonarqube_postgres_sonarqube_login: "{{ inv_install_sonarqube_postgres_sonarqube_login }}"
-    install_sonarqube_postgres_sonarqube_password: "{{ inv_install_sonarqube_postgres_sonarqube_password }}"
-    install_sonarqube_lib_path: "{{ inv_install_sonarqube_lib_path }}"
-    install_sonarqube_log_path: "{{ inv_install_sonarqube_log_path }}"
-    install_sonarqube_version: "{{ inv_install_sonarqube_version }}"
-    install_sonarqube_web_heap: "{{ inv_install_sonarqube_web_heap }}"
-    install_sonarqube_web_host: "{{ inv_install_sonarqube_web_host }}"
-    install_sonarqube_web_context: "{{ inv_install_sonarqube_web_context }}"
-    install_sonarqube_web_port: "{{ inv_install_sonarqube_web_port }}"
-    install_sonarqube_elasticsearch_heap: "{{ inv_install_sonarqube_elasticsearch_heap }}"
-    install_sonarqube_log_level: "{{ inv_install_sonarqube_log_level }}"
-    install_sonarqube_log_retention: "{{ inv_install_sonarqube_log_retention }}"
-    install_sonarqube_elasticsearch_port: "{{ inv_install_sonarqube_elasticsearch_port }}"
-    install_sonarqube_elasticsearch_host: "{{ inv_install_sonarqube_elasticsearch_host }}"
+    install_sonarqube__user: "{{ inv_install_sonarqube__user }}"
+    install_sonarqube__group: "{{ inv_install_sonarqube__group }}"
+    install_sonarqube__postgres_user: "{{ inv_install_sonarqube__postgres_user }}"
+    install_sonarqube__postgres_group: "{{ inv_install_sonarqube__postgres_group }}"
+    install_sonarqube__postgres_sonarqube_login: "{{ inv_install_sonarqube__postgres_sonarqube_login }}"
+    install_sonarqube__postgres_sonarqube_password: "{{ inv_install_sonarqube__postgres_sonarqube_password }}"
+    install_sonarqube__lib_path: "{{ inv_install_sonarqube__lib_path }}"
+    install_sonarqube__log_path: "{{ inv_install_sonarqube__log_path }}"
+    install_sonarqube__version: "{{ inv_install_sonarqube__version }}"
+    install_sonarqube__web_heap: "{{ inv_install_sonarqube__web_heap }}"
+    install_sonarqube__web_host: "{{ inv_install_sonarqube__web_host }}"
+    install_sonarqube__web_context: "{{ inv_install_sonarqube__web_context }}"
+    install_sonarqube__web_port: "{{ inv_install_sonarqube__web_port }}"
+    install_sonarqube__elasticsearch_heap: "{{ inv_install_sonarqube__elasticsearch_heap }}"
+    install_sonarqube__log_level: "{{ inv_install_sonarqube__log_level }}"
+    install_sonarqube__log_retention: "{{ inv_install_sonarqube__log_retention }}"
+    install_sonarqube__elasticsearch_port: "{{ inv_install_sonarqube__elasticsearch_port }}"
+    install_sonarqube__elasticsearch_host: "{{ inv_install_sonarqube__elasticsearch_host }}"
   ansible.builtin.include_role:
     name: "labocbz.install_sonarqube"
 ```
@@ -239,6 +239,13 @@ Here you can put your change to keep a trace of your work and decisions.
 
 * Role have been tested*
 * Certs removed (no SSL/TLS support for SonarQube ...)
+
+### 2024-02-24: Fix and CI
+
+* Added support for new CI base
+* Edit all vars with __
+* Tested and validated on Docker DIND
+* Removed docker socket local and port
 
 ## Authors
 
