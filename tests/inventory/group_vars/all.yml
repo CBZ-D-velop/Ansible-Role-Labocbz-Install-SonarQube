@@ -1,0 +1,10 @@
+---
+
+inv_install_sonarqube__postgres_sonarqube_login: "sonarqube"
+inv_install_sonarqube__postgres_sonarqube_password: "KDOEKD930DKDOEK3"
+
+inv_install_sonarqube__container_name: "sonarqube"
+inv_install_sonarqube__postgresql_container_name: "postgresql"
+
+inv_install_sonarqube__web_host: "0.0.0.0"
+inv_install_sonarqube__web_port: 9000

@@ -10,121 +10,47 @@
     ulimit -p 8192
     ulimit -u 8192
 
-- name: "Install packages"
-  ansible.builtin.package:
-    update_cache: true
-    name:
-      - "wget"
-      - "unzip"
-      - "curl"
-      - "gnupg2"
-      - "ca-certificates"
-      - "lsb-release"
-      - "socat"
+- name: "Create Docker network"
+  community.docker.docker_network:
+    name: "sonarqube_network"
 
-- name: "Install and configure PostgreSQL"
-  block:
-    - name: "Add PostgreSQL"
-      register: output
-      changed_when: output.rc != 0
-      ansible.builtin.shell: |
-        echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list
-        wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | sudo apt-key add -
+- name: "Install PostgreSQL"
+  community.docker.docker_container:
+    name: "{{ install_sonarqube__postgresql_container_name }}"
+    image: "postgres:latest"
+    state: "started"
+    recreate: false
+    restart_policy: "always"
+    hostname: "{{ install_sonarqube__postgresql_container_name }}"
+    ports:
+      - "127.0.0.1:5432:5432"
+    env:
+      POSTGRES_USER: "{{ install_sonarqube__postgres_sonarqube_login }}"
+      POSTGRES_PASSWORD: "{{ install_sonarqube__postgres_sonarqube_password }}"
+      POSTGRES_DB: "sonarqube"
+    volumes:
+      - "postgresql:/var/lib/postgresql"
+      - "postgresql_data:/var/lib/postgresql/data"
+    networks:
+      - name: "sonarqube_network"
 
-    - name: "Install PostgreSQL"
-      notify:
-        - "Enable and start PostgreSQL"
-      ansible.builtin.package:
-        update_cache: true
-        name:
-          - "postgresql"
-          - "postgresql-contrib"
-
-    - name: "Add / Edit system user for PostgreSQL"
-      ansible.builtin.user:
-        name: "{{ install_sonarqube_postgres_user }}"
-        groups: "{{ install_sonarqube_postgres_group }}"
-        state: present
-        system: true
-        create_home: false
-        append: true
-        shell: "/sbin/nologin"
-
-    - name: "Flush handlers"
-      ansible.builtin.meta: flush_handlers
-
-    - name: "Add SonarQube user, configure database, to PostgreSQL"
-      register: output
-      changed_when: output.rc != 0
-      become: yes
-      become_user: "postgres"
-      ansible.builtin.shell: |
-        psql -c "CREATE USER {{ install_sonarqube_postgres_sonarqube_login }} WITH ENCRYPTED password '{{ install_sonarqube_postgres_sonarqube_password }}';"
-        psql -c "CREATE DATABASE sonarqube WITH ENCODING 'UTF8' TEMPLATE=template0 OWNER {{ install_sonarqube_postgres_sonarqube_login }};"
-        psql -c "GRANT ALL PRIVILEGES ON DATABASE sonarqube to {{ install_sonarqube_postgres_sonarqube_login }};"
-
-- name: "Install SonarQube"
-  notify:
-    - "Restart SonarQube"
-  block:
-    - name: "Check if folder lib exist"
-      register: folder_check
-      ansible.builtin.stat:
-        path: "{{ install_sonarqube_lib_path }}"
-
-    - name: "Create lib path"
-      when: not folder_check.stat.exists
-      ansible.builtin.file:
-        path: "{{ install_sonarqube_lib_path }}"
-        state: directory
-        recurse: yes
-        mode: "0700"
-        group: "{{ install_sonarqube_group }}"
-        owner: "{{ install_sonarqube_user }}"
-
-    - name: "Check if folder log exist"
-      register: folder_check
-      ansible.builtin.stat:
-        path: "{{ install_sonarqube_log_path }}"
-
-    - name: "Create log path"
-      when: not folder_check.stat.exists
-      ansible.builtin.file:
-        path: "{{ install_sonarqube_log_path }}"
-        state: directory
-        recurse: yes
-        mode: "0700"
-        group: "{{ install_sonarqube_group }}"
-        owner: "{{ install_sonarqube_user }}"
-
-    - name: "Download sources and extract"
-      ansible.builtin.unarchive:
-        src: "https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-{{ install_sonarqube_version }}.zip"
-        dest: "{{ install_sonarqube_lib_path }}"
-        mode: "0700"
-        group: "{{ install_sonarqube_group }}"
-        owner: "{{ install_sonarqube_user }}"
-        remote_src: true
-        exclude:
-          - "sonarqube-{{ install_sonarqube_version }}/conf/sonar.properties"
-
-    - name: "Import SonarQube properties file"
-      ansible.builtin.template:
-        src: "templates/sonar.properties.j2"
-        dest: "{{ install_sonarqube_lib_path }}/sonarqube-{{ install_sonarqube_version }}/conf/sonar.properties"
-        mode: "0700"
-        group: "{{ install_sonarqube_group }}"
-        owner: "{{ install_sonarqube_user }}"
-        lstrip_blocks: yes
-
-- name: "Import SonarQube service file"
-  notify:
-    - "Enable and start SonarQube"
-    - "Restart SonarQube"
-  ansible.builtin.template:
-    src: "templates/sonarqube.service.j2"
-    dest: "/etc/systemd/system/sonarqube.service"
-    mode: "0600"
-    group: "root"
-    owner: "root"
-    lstrip_blocks: yes
+- name: "Install Sonarqube"
+  community.docker.docker_container:
+    name: "{{ install_sonarqube__container_name }}"
+    image: "sonarqube:latest"
+    state: "started"
+    recreate: false
+    restart_policy: "always"
+    hostname: "{{ install_sonarqube__container_name }}"
+    ports:
+      - "{{ install_sonarqube__web_host }}:{{ install_sonarqube__web_port }}:9000"
+    volumes:
+      - "sonarqube_data:/opt/sonarqube/data"
+      - "sonarqube_logs:/opt/sonarqube/logs"
+      - "sonarqube_extensions:/opt/sonarqube/extensions"
+    networks:
+      - name: "sonarqube_network"
+    env:
+      SONAR_JDBC_URL: "jdbc:postgresql://{{ install_sonarqube__postgresql_container_name }}:5432/sonarqube"
+      SONAR_JDBC_USERNAME: "{{ install_sonarqube__postgres_sonarqube_login }}"
+      SONAR_JDBC_PASSWORD: "{{ install_sonarqube__postgres_sonarqube_password }}"
