@@ -1,7 +1,7 @@
 ---
 - name: "Perform pre tasks configurations (-u / -p for multiple bash possibilities)"
   register: output
-  changed_when: output.rc != 0
+  changed_when: false
   ignore_errors: true # Because of Docker limitations
   ansible.builtin.shell: |
     sysctl -w vm.max_map_count=524288

@@ -18,7 +18,7 @@
       failed_when: output.rc != 0
       ansible.builtin.command: "docker-compose -v"
 
-    - name: "Check Soanrqube HTTP URL"
+    - name: "Check Sonarqube HTTP URL"
       register: result
       failed_when: result.status != 200
       ansible.builtin.uri:

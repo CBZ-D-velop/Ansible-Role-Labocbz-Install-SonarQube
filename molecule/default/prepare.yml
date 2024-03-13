@@ -29,6 +29,7 @@
       register: output
       changed_when: output.rc != 0
       ansible.builtin.shell: "echo \"{{ hostvars[host]['ansible_default_ipv4']['address'] }}  {{ host }} # from Molecule\" >> /etc/hosts"
+
     - name: "Include labocbz.install_docker"
       tags:
         - "labocbz.install_docker"
