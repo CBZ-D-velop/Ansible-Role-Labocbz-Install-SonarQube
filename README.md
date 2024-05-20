@@ -86,7 +86,6 @@ yamllint -c ./.yamllint .
 ansible-lint --config=./.ansible-lint .
 
 # Execute and test your role
-molecule lint
 molecule create
 molecule list
 molecule converge
@@ -146,7 +145,7 @@ In order to surchage vars, you have multiples possibilities but for mains cases 
 ```YAML
 # From inventory
 ---
-inv_prepare_host_system_users:
+inv_prepare_host__system_users:
   - login: "sonarqube"
     group: "sonarqube"
   - login: "postgres"
